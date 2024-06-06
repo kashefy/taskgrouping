@@ -104,7 +104,7 @@ class TaskonomyLoader(data.Dataset):
             tuple: (image, target) where target is an uint8 matrix of integers with the same width and height.
         If there is an error loading an image or its labels, simply return the previous example.
         """
-        with torch.no_grad():
+        with ((torch.no_grad())):
             file_name=self.records[index]
             save_filename = file_name
             
@@ -141,6 +141,11 @@ class TaskonomyLoader(data.Dataset):
                 
                 yfilename = file_name.replace('rgb',i)
                 try:
+                    if 'segment_semantic' in yfilename:
+                        bname_segm = os.path.basename(yfilename).replace('segment_semantic', 'segment_semantic')
+                        ypath_segm = os.path.join(os.path.dirname(yfilename), dirname_segm)
+                        if not os.path.isfile(yfilename) and os.path.isfile(ypath_segm):
+                            yfilename = ypath_segm
                     yim = Image.open(yfilename)
                 except:
                     yim = self.last[i].copy()
